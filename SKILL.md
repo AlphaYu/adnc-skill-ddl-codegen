@@ -1,16 +1,46 @@
 ---
 name: adnc-skill-ddl-codegen
 description: Generates Adnc Repository, Application, and Api CRUD code from SQL DDL or CREATE TABLE statements for this repository. Use when asked to add entities, entity configs, EntityInfo mappings, DTOs, validators, service interfaces, services, controllers, MapperProfile mappings, or PermissionConsts entries based on one or more tables.
+license: MIT
 compatibility: Designed for GitHub Copilot CLI or similar coding agents with read/write access to this repository and a user-provided DDL file or snippet.
-metadata:
-  repo: adnc-monolithic
-  module: adnc
-  layer-scope: repository-application-api
+ metadata:
+   repo: adnc-skill-ddl-codegen
+   module: adnc-admin
+   layer-scope: repository-application-api
 ---
 
 # Adnc DDL code generation
 
 Use this skill when the task is to generate adnc module code from one or more table DDL definitions.
+
+## Skill packaging and loading
+
+When distributed as a standard Copilot skill, place this skill in a dedicated skill directory such as:
+
+- `.github\skills\adnc-skill-ddl-codegen\SKILL.md` for a repository-scoped skill
+- `%USERPROFILE%\.copilot\skills\adnc-skill-ddl-codegen\SKILL.md` for a personal skill on Windows
+
+Keep the skill directory name aligned with the `name` field: `adnc-skill-ddl-codegen`.
+
+After adding or updating the skill, reload and verify it in Copilot CLI:
+
+1. Run `/skills reload`
+2. Run `/skills info adnc-skill-ddl-codegen`
+
+This skill package may also include supporting files in the same directory, such as:
+
+- `assets\templates.md`
+- `references\ddl-mapping.md`
+- `references\project-conventions.md`
+- `references\src\...`
+
+## Safety and tool approval
+
+This skill is instruction-heavy and does not require bundled shell scripts to do its main job.
+
+- Do not add `allowed-tools: shell` or `allowed-tools: bash` unless you have reviewed every referenced script and explicitly want to pre-approve command execution.
+- Prefer leaving high-risk tools unapproved so the user still confirms command execution interactively.
+- Treat `references\src` as read-only examples and never as a write target.
 
 Typical triggers:
 
@@ -18,6 +48,40 @@ Typical triggers:
 - "为新表生成 entity / dto / service / controller"
 - "Add CRUD code for a new table"
 - "Update EntityInfo, MapperProfile, and PermissionConsts for new tables"
+- "Use the /adnc-skill-ddl-codegen skill to generate Adnc CRUD code"
+
+## Trigger examples
+
+Use prompts shaped like these when you want Copilot to load this skill explicitly:
+
+```text
+Use the /adnc-skill-ddl-codegen skill to generate Adnc CRUD code for this DDL.
+Namespace prefix: Adnc.Demo.Admin
+
+CREATE TABLE sys_customer (
+    id bigint NOT NULL,
+    customer_code varchar(32) NOT NULL COMMENT 'Customer code',
+    customer_name varchar(128) NOT NULL COMMENT 'Customer name',
+    isdeleted bit NOT NULL DEFAULT 0 COMMENT 'Deletion flag',
+    rowversion rowversion NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_customer_code (customer_code)
+);
+```
+
+```text
+Generate Adnc CRUD code for these tables with the /adnc-skill-ddl-codegen skill.
+Namespace prefix: Adnc.Demo.Admin
+
+<CREATE TABLE ...>
+```
+
+```text
+Use the /adnc-skill-ddl-codegen skill and generate relation-table CRUD for this DDL.
+Namespace prefix: Adnc.Demo.Admin
+
+<CREATE TABLE ...>
+```
 
 ## Required inputs
 
