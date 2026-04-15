@@ -69,37 +69,40 @@ For the fastest and most reliable path, the DDL should also include:
 
 If the DDL is incomplete, the skill must stop and ask for the real table definition instead of guessing from partial SQL or seed data.
 
+## Direct usage in your team
+
+There is no separate installer for this skill package right now. The most practical internal setup is to use this repository directly with GitHub Copilot CLI:
+
+1. Install GitHub Copilot CLI.
+2. Clone this repository.
+3. Open this repository in your terminal.
+4. Launch `copilot`.
+
+Example setup:
+
+```powershell
+winget install GitHub.Copilot
+git clone https://github.com/AlphaYu/adnc-skill-ddl-codegen.git
+cd adnc-skill-ddl-codegen
+copilot
+```
+
+This means the repo is currently used as a shared skill repository rather than a one-click marketplace package.
+
 ## How to use
 
-Use the skill by giving the agent a clear task plus the required DDL and namespace prefix in the same prompt.
+After launching `copilot` in this repository, use the skill in a single prompt.
 
 Recommended flow:
 
-1. Provide one or more `CREATE TABLE` statements.
+1. Paste one or more target `CREATE TABLE` statements.
 2. State the namespace prefix explicitly.
-3. Say whether the target is a normal business table or a relation table if that is not obvious.
-4. Add any scope limits only when you want to narrow the default full-CRUD output.
-
-Example prompt:
-
-```text
-Generate Adnc CRUD code from the following DDL.
-Namespace prefix: Adnc.Demo.Admin
-
-CREATE TABLE sys_customer (
-    id bigint NOT NULL,
-    customer_code varchar(32) NOT NULL COMMENT 'Customer code',
-    customer_name varchar(128) NOT NULL COMMENT 'Customer name',
-    isdeleted bit NOT NULL DEFAULT 0 COMMENT 'Deletion flag',
-    rowversion rowversion NOT NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_customer_code (customer_code)
-);
-```
+3. Mention relation-table CRUD only when you want to override the default skip behavior.
+4. Add scope limits only when you want less than the default full CRUD output.
 
 ## How to write prompts
 
-Good prompts are short but complete. A useful prompt usually contains:
+Good prompts should be short but complete. A useful prompt usually contains:
 
 - the action: generate, update, or regenerate
 - the target tables
@@ -127,6 +130,21 @@ Prompt writing tips:
 
 Examples:
 
+- **Basic prompt**:
+  ```text
+  Generate Adnc CRUD code from the following DDL.
+  Namespace prefix: Adnc.Demo.Admin
+
+  CREATE TABLE sys_customer (
+      id bigint NOT NULL,
+      customer_code varchar(32) NOT NULL COMMENT 'Customer code',
+      customer_name varchar(128) NOT NULL COMMENT 'Customer name',
+      isdeleted bit NOT NULL DEFAULT 0 COMMENT 'Deletion flag',
+      rowversion rowversion NOT NULL,
+      PRIMARY KEY (id),
+      UNIQUE KEY uk_customer_code (customer_code)
+  );
+  ```
 - **Full CRUD for a normal table**: `Generate Adnc Admin CRUD code for this table. Namespace prefix: Adnc.Demo.Admin`
 - **Force CRUD for a relation table**: `Generate relation-table CRUD for this DDL. Namespace prefix: Adnc.Demo.Admin`
 - **Restrict scope**: `Generate only repository and application layers for this DDL. Namespace prefix: Adnc.Demo.Admin`

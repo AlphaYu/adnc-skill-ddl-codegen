@@ -69,33 +69,36 @@
 
 如果 DDL 信息不完整，skill 必须停止并索取真实表定义，不能根据残缺 SQL 或 seed data 猜测结构。
 
+## 团队内直接使用方式
+
+这个 skill 包目前没有单独的安装器。对内部团队来说，最直接的方式是配合 GitHub Copilot CLI 直接使用这个仓库：
+
+1. 安装 GitHub Copilot CLI。
+2. 克隆这个仓库。
+3. 在终端进入这个仓库目录。
+4. 启动 `copilot`。
+
+示例：
+
+```powershell
+winget install GitHub.Copilot
+git clone https://github.com/AlphaYu/adnc-skill-ddl-codegen.git
+cd adnc-skill-ddl-codegen
+copilot
+```
+
+也就是说，这个仓库当前更适合被当作一个团队共享的 skill 仓库来使用，而不是一个点一下就安装完成的 marketplace 包。
+
 ## 如何使用
 
-使用这个 skill 时，最好在同一条提示词里同时提供明确任务、DDL 和命名空间前缀。
+启动 `copilot` 后，在同一条提示词里触发 skill。
 
 推荐流程：
 
-1. 提供一个或多个 `CREATE TABLE` 语句。
+1. 提供一个或多个目标表的 `CREATE TABLE` 语句。
 2. 明确写出 namespace prefix。
-3. 如果表类型不明显，说明它是普通业务表还是关系表。
-4. 只有在你想缩小默认完整 CRUD 范围时，再补充额外范围限制。
-
-提示词示例：
-
-```text
-根据下面的 DDL 生成 Adnc CRUD 代码。
-Namespace prefix: Adnc.Demo.Admin
-
-CREATE TABLE sys_customer (
-    id bigint NOT NULL,
-    customer_code varchar(32) NOT NULL COMMENT '客户编码',
-    customer_name varchar(128) NOT NULL COMMENT '客户名称',
-    isdeleted bit NOT NULL DEFAULT 0 COMMENT '删除标记',
-    rowversion rowversion NOT NULL,
-    PRIMARY KEY (id),
-    UNIQUE KEY uk_customer_code (customer_code)
-);
-```
+3. 只有在你想覆盖默认跳过规则时，再说明关系表也要生成 CRUD。
+4. 只有在你不想要默认完整 CRUD 输出时，再补充范围限制。
 
 ## 如何写提示词
 
@@ -127,6 +130,21 @@ Special requirements: <only if needed>
 
 示例：
 
+- **基础提示词**：
+  ```text
+  根据下面的 DDL 生成 Adnc CRUD 代码。
+  Namespace prefix: Adnc.Demo.Admin
+
+  CREATE TABLE sys_customer (
+      id bigint NOT NULL,
+      customer_code varchar(32) NOT NULL COMMENT '客户编码',
+      customer_name varchar(128) NOT NULL COMMENT '客户名称',
+      isdeleted bit NOT NULL DEFAULT 0 COMMENT '删除标记',
+      rowversion rowversion NOT NULL,
+      PRIMARY KEY (id),
+      UNIQUE KEY uk_customer_code (customer_code)
+  );
+  ```
 - **普通业务表完整 CRUD**：`Generate Adnc Admin CRUD code for this table. Namespace prefix: Adnc.Demo.Admin`
 - **强制为关系表生成 CRUD**：`Generate relation-table CRUD for this DDL. Namespace prefix: Adnc.Demo.Admin`
 - **限制生成范围**：`Generate only repository and application layers for this DDL. Namespace prefix: Adnc.Demo.Admin`
