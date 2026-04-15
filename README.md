@@ -124,19 +124,15 @@ Examples:
 6. Update shared files such as `EntityInfo.cs`, `MapperProfile.cs`, and `PermissionConsts.cs` in the same pass as per-entity generation.
 7. After successful generation, do not stage files with git; the completion message must be exactly `生成成功`.
 
-## Validation
-
-This repository does not define a repo-local build, test, or lint workflow for the skill package itself.
-
-When generated C# output is applied to the target Adnc repository, the documented validation command is:
-
-```powershell
-dotnet build src\Adnc.Demo.sln
-```
-
 ## Maintenance guidance
 
 - Prefer changing rules and templates over editing generated examples
 - Treat `references\src` as read-only reference material
 - Keep defaults explicit so the skill can take the fast path without repeated confirmation
 - Optimize for deterministic generation, clear naming, and complete shared-file updates
+
+## License
+
+This repository is licensed under the MIT License.
+
+See the root `LICENSE` file for the full license text.

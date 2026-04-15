@@ -124,19 +124,15 @@ Special requirements: <only if needed>
 6. `EntityInfo.cs`、`MapperProfile.cs`、`PermissionConsts.cs` 等共享文件必须和实体文件在同一轮一起更新。
 7. 生成成功后不要执行 `git add` 或暂存生成文件，最终回复必须严格为 `生成成功`。
 
-## 验证
-
-这个 skill 仓库本身没有定义本地 build、test 或 lint 流程。
-
-当生成出的 C# 文件被放入目标 Adnc 仓库后，文档中给出的验证命令是：
-
-```powershell
-dotnet build src\Adnc.Demo.sln
-```
-
 ## 维护建议
 
 - 优先改规则和模板，不要把参考快照当作产出目录
 - 将 `references\src` 视为只读参考材料
 - 尽量把高频判断固化为明确默认规则，减少重复确认
 - 优先保证生成结果可预测、命名清晰、共享文件更新完整
+
+## LICENSE
+
+本仓库采用 MIT License。
+
+完整许可文本请查看根目录下的 `LICENSE` 文件。
