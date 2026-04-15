@@ -1,6 +1,23 @@
-# adnc-skill-ddl-codegen
+# <div align="center"><img src="https://aspdotnetcore.net/wp-content/uploads/2023/04/adnc-github.png" alt="Adnc.Codegen" style="zoom:50%;" /></div>
 
-This repository maintains a **skill package** that guides an agent to generate Adnc Admin CRUD code from SQL DDL. It is for authoring, refining, and validating the skill itself rather than building the business application.
+<div align='center'>
+<a href="https://github.com/AlphaYu/Adnc/blob/master/LICENSE">
+<img alt="GitHub license" src="https://img.shields.io/github/license/AlphaYu/Adnc"/>
+</a>
+<a href="https://github.com/AlphaYu/Adnc/stargazers">
+<img alt="GitHub stars" src="https://img.shields.io/github/stars/AlphaYu/Adnc"/>
+</a>
+<a href="https://github.com/AlphaYu/Adnc/network">
+<img alt="GitHub forks" src="https://img.shields.io/github/forks/AlphaYu/Adnc"/>
+</a>
+<a href="">
+<img alt="Visitors" src="https://komarev.com/ghpvc/?username=alphayu&color=red&label=Visitors"/>
+</a>
+</div>
+
+[中文](./README_ZH.md)  [English](./README.md)
+
+This repository maintains a **skill package** that guides an agent to generate Adnc CRUD code from SQL DDL. It is for authoring, refining, and validating the skill itself rather than building the business application.
 
 ## Purpose
 
@@ -133,6 +150,4 @@ Examples:
 
 ## License
 
-This repository is licensed under the MIT License.
-
-See the root `LICENSE` file for the full license text.
+This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for details.

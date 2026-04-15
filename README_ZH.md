@@ -1,6 +1,23 @@
-# adnc-skill-ddl-codegen
+# <div align="center"><img src="https://aspdotnetcore.net/wp-content/uploads/2023/04/adnc-github.png" alt="Adnc.Codegen" style="zoom:50%;" /></div>
 
-这个仓库用于维护一个 **skill 包**，指导代理根据 SQL DDL 生成符合约定的 Adnc Admin CRUD 代码。它的重点是编写、迭代和验证 skill 本身，而不是开发业务系统。
+<div align='center'>
+<a href="https://github.com/AlphaYu/Adnc/blob/master/LICENSE">
+<img alt="GitHub license" src="https://img.shields.io/github/license/AlphaYu/Adnc"/>
+</a>
+<a href="https://github.com/AlphaYu/Adnc/stargazers">
+<img alt="GitHub stars" src="https://img.shields.io/github/stars/AlphaYu/Adnc"/>
+</a>
+<a href="https://github.com/AlphaYu/Adnc/network">
+<img alt="GitHub forks" src="https://img.shields.io/github/forks/AlphaYu/Adnc"/>
+</a>
+<a href="">
+<img alt="Visitors" src="https://komarev.com/ghpvc/?username=alphayu&color=red&label=Visitors"/>
+</a>
+</div>
+
+[中文](./README_ZH.md)  [English](./README.md)
+
+这个仓库用于维护一个 **skill 包**，指导代理根据 SQL DDL 生成符合约定的 Adnc  CRUD 代码。它的重点是编写、迭代和验证 skill 本身，而不是开发业务系统。
 
 ## 仓库定位
 
@@ -133,6 +150,4 @@ Special requirements: <only if needed>
 
 ## LICENSE
 
-本仓库采用 MIT License。
-
-完整许可文本请查看根目录下的 `LICENSE` 文件。
+本项目基于 **MIT License** 开源，详见 [LICENSE](./LICENSE)。
