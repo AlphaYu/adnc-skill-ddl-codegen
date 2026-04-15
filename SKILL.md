@@ -1,16 +1,16 @@
 ---
 name: adnc-skill-ddl-codegen
-description: Generates Adnc Repository, Application, and Api CRUD code from SQL DDL or CREATE TABLE statements for this repository. Use when asked to add Admin entities, entity configs, EntityInfo mappings, DTOs, validators, service interfaces, services, controllers, MapperProfile mappings, or PermissionConsts entries based on one or more tables.
+description: Generates Adnc Repository, Application, and Api CRUD code from SQL DDL or CREATE TABLE statements for this repository. Use when asked to add entities, entity configs, EntityInfo mappings, DTOs, validators, service interfaces, services, controllers, MapperProfile mappings, or PermissionConsts entries based on one or more tables.
 compatibility: Designed for GitHub Copilot CLI or similar coding agents with read/write access to this repository and a user-provided DDL file or snippet.
 metadata:
   repo: adnc-monolithic
-  module: admin
+  module: adnc
   layer-scope: repository-application-api
 ---
 
 # Adnc DDL code generation
 
-Use this skill when the task is to generate Admin module code from one or more table DDL definitions.
+Use this skill when the task is to generate adnc module code from one or more table DDL definitions.
 
 Typical triggers:
 

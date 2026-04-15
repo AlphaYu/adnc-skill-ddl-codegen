@@ -1,49 +1,142 @@
 # adnc-skill-ddl-codegen
 
-一个用于**编写、维护、测试 skill 文件**的仓库，目标是指导代理根据 SQL DDL 生成符合约定的 Adnc Admin CRUD 代码。
+This repository maintains a **skill package** that guides an agent to generate Adnc Admin CRUD code from SQL DDL. It is for authoring, refining, and validating the skill itself rather than building the business application.
 
-## 仓库定位
+## Purpose
 
-- 这里不是业务系统源码仓库
-- 主要产物是 skill、模板、规则说明和参考快照
-- 生成代码时，目标输出目录是 `.\src`
-- `references\src` 仅作为参考样例，不是生成输出目录
+- Maintain the generation contract in `SKILL.md`
+- Keep templates and rule documents aligned with the target Adnc repository
+- Use mirrored source snapshots under `references\src` as examples for generation behavior
+- Generate real output under `.\src`, never under `references\src`
 
-## 关键文件
+## Repository layout
 
-| 文件 | 作用 |
+| Path | Role |
 | --- | --- |
-| `SKILL.md` | 主 skill 合同，定义触发条件、输入要求、工作流、输出范围和生成规则 |
-| `assets\templates.md` | 生成代码时使用的模板骨架 |
-| `references\ddl-mapping.md` | DDL 到 Entity / DTO / Service / Controller 的映射规则 |
-| `references\project-conventions.md` | 需要优先读取的参考文件和项目约定 |
-| `INSTRUCTIONS.md` | 本仓库维护目标与修改原则 |
+| `SKILL.md` | Main skill contract: triggers, required inputs, workflow, output scope, and generation rules |
+| `INSTRUCTIONS.md` | Repository purpose and maintenance guidance |
+| `assets\templates.md` | Skeletons for generated entities, DTOs, validators, services, controllers, and shared updates |
+| `references\ddl-mapping.md` | Mapping rules from SQL DDL to Adnc repository, application, and API code |
+| `references\project-conventions.md` | Required reference files and repo-specific conventions |
+| `references\src` | Mirrored source snapshots for pattern matching only |
 
-## 当前生成规则要点
+## What the skill generates
 
-1. 普通业务表默认直接生成完整 CRUD。
-2. 关系表如 `*_relation` 默认跳过完整 CRUD，除非用户明确要求。
-3. 实体属性 `<summary>` 优先使用 DDL 列 `COMMENT`，为空时回退到原始列名。
-4. 表中有 `rowversion` 时，实体保留 `RowVersion` 并实现 `IConcurrency`。
-5. 表中有 `isdeleted` 时，实体保留 `IsDeleted` 并实现 `ISoftDelete`。
-6. 生成成功后不执行 `git add`，只返回 `生成成功`。
+For a normal business table, the skill is expected to generate or update:
 
-## 使用方式
+- `.\src\Repository\Entities\{Entity}.cs`
+- `.\src\Repository\Entities\Config\{Entity}Config.cs`
+- `.\src\Repository\EntityInfo.cs`
+- `.\src\Repository\EntityConsts.cs` when reusable length constants are needed
+- `.\src\Application\Contracts\Dtos\{Entity}\*`
+- `.\src\Application\Contracts\Interfaces\I{Entity}Service.cs`
+- `.\src\Application\Services\{Entity}Service.cs`
+- `.\src\Application\MapperProfile.cs`
+- `.\src\Api\Controllers\{Entity}Controller.cs`
+- `.\src\Api\PermissionConsts.cs`
 
-提供以下输入即可触发生成：
+Pure relation tables such as `*_relation` should skip full CRUD by default unless the user explicitly asks for it.
 
-- DDL 文件或 `CREATE TABLE` 片段
-- namespace prefix，例如 `Adnc.Demo.Admin`
+## Required inputs
 
-推荐 DDL 同时包含：
+The skill should only run when the user provides:
 
-- 列 `COMMENT`
-- `UNIQUE` 键或唯一索引
-- `isdeleted`
-- `rowversion`
+1. A DDL file or `CREATE TABLE` statements for the target tables
+2. The namespace prefix, for example `Adnc.Demo.Admin`
 
-## 维护建议
+For the fastest and most reliable path, the DDL should also include:
 
-- 优先更新 `SKILL.md`、`assets\templates.md` 和 `references\*.md`
-- 不要把 `references\src` 直接当成生成输出目录
-- 如果生成风格需要调整，优先改规则和模板，不要直接用生成结果覆盖参考快照
+- column `COMMENT` values
+- explicit `UNIQUE` keys or unique indexes
+- explicit `isdeleted` and `rowversion` columns when those behaviors are required
+
+If the DDL is incomplete, the skill must stop and ask for the real table definition instead of guessing from partial SQL or seed data.
+
+## How to use
+
+Use the skill by giving the agent a clear task plus the required DDL and namespace prefix in the same prompt.
+
+Recommended flow:
+
+1. Provide one or more `CREATE TABLE` statements.
+2. State the namespace prefix explicitly.
+3. Say whether the target is a normal business table or a relation table if that is not obvious.
+4. Add any scope limits only when you want to narrow the default full-CRUD output.
+
+Example prompt:
+
+```text
+Generate Adnc CRUD code from the following DDL.
+Namespace prefix: Adnc.Demo.Admin
+
+CREATE TABLE sys_customer (
+    id bigint NOT NULL,
+    customer_code varchar(32) NOT NULL COMMENT 'Customer code',
+    customer_name varchar(128) NOT NULL COMMENT 'Customer name',
+    isdeleted bit NOT NULL DEFAULT 0 COMMENT 'Deletion flag',
+    rowversion rowversion NOT NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_customer_code (customer_code)
+);
+```
+
+## How to write prompts
+
+Good prompts are short but complete. A useful prompt usually contains:
+
+- the action: generate, update, or regenerate
+- the target tables
+- the DDL itself or a clear DDL source selected by the user
+- the namespace prefix
+- any non-default requirement, such as relation-table CRUD or limited output scope
+
+Recommended prompt pattern:
+
+```text
+Generate Adnc CRUD code for these tables.
+Namespace prefix: <Your.Namespace.Prefix>
+Special requirements: <only if needed>
+
+<CREATE TABLE ...>
+```
+
+Prompt writing tips:
+
+- Include the real `CREATE TABLE` statement instead of describing columns in prose.
+- Include column comments when you want accurate entity property XML docs.
+- Include unique keys or indexes when uniqueness checks should be generated in services.
+- Explicitly say `generate relation-table CRUD` when the table is a pure join table and you do want full CRUD.
+- Do not ask the skill to infer schema from insert scripts, screenshots, or partial SQL.
+
+Examples:
+
+- **Full CRUD for a normal table**: `Generate Adnc Admin CRUD code for this table. Namespace prefix: Adnc.Demo.Admin`
+- **Force CRUD for a relation table**: `Generate relation-table CRUD for this DDL. Namespace prefix: Adnc.Demo.Admin`
+- **Restrict scope**: `Generate only repository and application layers for this DDL. Namespace prefix: Adnc.Demo.Admin`
+
+## Core rules
+
+1. Read `references\.editorconfig`, `references\ddl-mapping.md`, and `references\project-conventions.md` before changing generation behavior.
+2. Keep `SKILL.md`, `INSTRUCTIONS.md`, `assets\templates.md`, and relevant `references\*.md` files aligned when rules change.
+3. Generate code into `.\src\Repository`, `.\src\Application`, and `.\src\Api`; never write generated output into `references\src`.
+4. Entity property `<summary>` text must use the DDL column comment verbatim, or fall back to the raw SQL column name when no comment is available.
+5. Preserve `IsDeleted` with `ISoftDelete` when the DDL contains `isdeleted`, and preserve `RowVersion` with `IConcurrency` when the DDL contains `rowversion`.
+6. Update shared files such as `EntityInfo.cs`, `MapperProfile.cs`, and `PermissionConsts.cs` in the same pass as per-entity generation.
+7. After successful generation, do not stage files with git; the completion message must be exactly `生成成功`.
+
+## Validation
+
+This repository does not define a repo-local build, test, or lint workflow for the skill package itself.
+
+When generated C# output is applied to the target Adnc repository, the documented validation command is:
+
+```powershell
+dotnet build src\Adnc.Demo.sln
+```
+
+## Maintenance guidance
+
+- Prefer changing rules and templates over editing generated examples
+- Treat `references\src` as read-only reference material
+- Keep defaults explicit so the skill can take the fast path without repeated confirmation
+- Optimize for deterministic generation, clear naming, and complete shared-file updates
